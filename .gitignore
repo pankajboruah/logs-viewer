@@ -1,0 +1,10 @@
+node_modules
+dist
+dist-demo
+dist-types
+.DS_Store
+.env
+.env.*
+coverage
+.idea
+*.local
