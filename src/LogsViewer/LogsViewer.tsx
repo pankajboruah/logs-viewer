@@ -327,6 +327,7 @@ function LogsViewer({
     }
 
     updateViewer(editorInstance);
+    updateContextViewer(editorInstance);
   };
 
   const highlightKeywords = ({
