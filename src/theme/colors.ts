@@ -18,7 +18,7 @@ export const colors = {
   focusedLineText: '#ffffff',
 
   shimmerBackground: '#2a2a2a',
-  keywordHighlightBackground: '#5a4a1a',
+  keywordHighlightBackground: '#8b2c2c',
 
   accent: '#9d7bea',
 } as const;
