@@ -2,7 +2,8 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/logs-viewer/' : '/',
   plugins: [react(), svgr()],
   resolve: {
     alias: {
@@ -16,4 +17,4 @@ export default defineConfig({
     outDir: 'dist-demo',
     sourcemap: true,
   },
-});
+}));
