@@ -2,11 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Button,
-  Checkbox,
   Dialog,
   DialogContent,
   DialogTitle,
-  FormControlLabel,
   MenuItem,
   Select,
   Stack,
@@ -16,7 +14,7 @@ import {
 import LogsViewer, { LogEntry } from '../LogsViewer';
 import { generateMockLogs } from './mockLogs';
 
-type Mode = 'STATIC' | 'SURROUNDING_LOGS' | 'ALL_APPLICATION_LOGS' | 'LIVE';
+type Mode = 'STATIC' | 'LIVE';
 
 const INITIAL_LOG_COUNT = 40;
 const PAGE_SIZE = 20;
@@ -25,7 +23,6 @@ export default function DemoApp() {
   const [mode, setMode] = useState<Mode>('STATIC');
   const [logs, setLogs] = useState<LogEntry[]>(() => generateMockLogs(INITIAL_LOG_COUNT));
   const [keywordInput, setKeywordInput] = useState('error');
-  const [matchCase, setMatchCase] = useState(false);
   const [showBottomLoader, setShowBottomLoader] = useState(false);
   const [showTopLoader, setShowTopLoader] = useState(false);
   const [topLogsAddedCount, setTopLogsAddedCount] = useState<number | undefined>(undefined);
@@ -85,10 +82,6 @@ export default function DemoApp() {
         value={keywordInput}
         onChange={(e) => setKeywordInput(e.target.value)}
       />
-      <FormControlLabel
-        control={<Checkbox checked={matchCase} onChange={(e) => setMatchCase(e.target.checked)} />}
-        label='Match case'
-      />
     </Stack>
   );
 
@@ -107,8 +100,6 @@ export default function DemoApp() {
       <Stack direction='row' spacing={2} alignItems='center' flexWrap='wrap'>
         <Select size='small' value={mode} onChange={(e) => setMode(e.target.value as Mode)}>
           <MenuItem value='STATIC'>STATIC</MenuItem>
-          <MenuItem value='SURROUNDING_LOGS'>SURROUNDING_LOGS</MenuItem>
-          <MenuItem value='ALL_APPLICATION_LOGS'>ALL_APPLICATION_LOGS</MenuItem>
           <MenuItem value='LIVE'>LIVE</MenuItem>
         </Select>
 
