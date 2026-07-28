@@ -35,7 +35,7 @@ import { LogsViewer } from 'logs-viewer';
 />;
 ```
 
-See `LogsViewer.types.ts` for the full discriminated-union prop API (`STATIC`/`SURROUNDING_LOGS`/`ALL_APPLICATION_LOGS` modes vs. `LIVE` mode, and the `showExpandLogContext` variants).
+See `LogsViewer.types.ts` for the full discriminated-union prop API (`STATIC`/`SURROUNDING_LOGS` modes vs. `LIVE` mode, and the `showExpandLogContext` variants).
 
 ## Development
 

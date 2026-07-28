@@ -1,4 +1,3 @@
-import * as monaco from 'monaco-editor';
 import { ReactNode } from 'react';
 
 export interface LogEntry {
@@ -13,7 +12,7 @@ export interface StaticLogsViewerProps extends LogsViewerProps {
   handleOnScrollTop?: (scrollToLineNumberCB: (lineNumberToScrollTo: number) => void) => void;
   isPaused?: never;
   keywords: string[];
-  mode?: 'STATIC' | 'SURROUNDING_LOGS' | 'ALL_APPLICATION_LOGS';
+  mode?: 'STATIC' | 'SURROUNDING_LOGS';
   setIsPaused?: never;
 }
 
@@ -52,14 +51,4 @@ export interface LogsViewerProps {
   showTopLoader?: boolean;
   statusMessage?: ReactNode;
   topLogsAddedCount?: number;
-}
-
-export interface SearchAndHighlightParams {
-  matchCase?: boolean;
-  reverse?: boolean;
-}
-
-export interface HighlightKeywordsParams {
-  editorInstance: monaco.editor.IStandaloneCodeEditor;
-  matchCase?: boolean;
 }

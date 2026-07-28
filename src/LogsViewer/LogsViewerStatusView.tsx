@@ -11,22 +11,15 @@ export default function LogsViewerStatusView({
   message,
   hasNoLogs,
   loading,
-  mode,
 }: {
   message?: ReactNode;
   hasNoLogs: boolean;
   loading: boolean;
-  mode?: 'STATIC' | 'SURROUNDING_LOGS' | 'LIVE' | 'ALL_APPLICATION_LOGS';
 }) {
-  const isAllApplicationLogsMode = mode === 'ALL_APPLICATION_LOGS';
-
   return (
     <>
       {loading && (
-        <StyledBoxContainer
-          sx={{ minHeight: '100%' }}
-          isAllApplicationLogsMode={isAllApplicationLogsMode}
-        >
+        <StyledBoxContainer sx={{ minHeight: '100%' }}>
           <StyledBoxContent>
             <CircularProgress
               color='primary'
@@ -42,10 +35,7 @@ export default function LogsViewerStatusView({
         </StyledBoxContainer>
       )}
       {!loading && hasNoLogs && (
-        <StyledBoxContainer
-          isAllApplicationLogsMode={isAllApplicationLogsMode}
-          sx={{ minHeight: '100%' }}
-        >
+        <StyledBoxContainer sx={{ minHeight: '100%' }}>
           {message || <EmptyStateText icon={<DesktopAccessDisabledIcon />} title='No logs found' />}
         </StyledBoxContainer>
       )}

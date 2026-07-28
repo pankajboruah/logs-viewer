@@ -1,14 +1,6 @@
 import styled from '@emotion/styled';
-import { Theme } from '@mui/material';
-import { SxProps, Box } from '@mui/system';
+import { Box } from '@mui/system';
 import { colors } from '../theme/colors';
-
-const pausePlayButtonStyle: SxProps<Theme> = {
-  color: (theme) => theme.palette.common.white,
-  height: '24px',
-  width: '24px',
-  padding: '4px',
-};
 
 const StyledEditorContainer = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'editorWidth',
@@ -63,23 +55,15 @@ const StyledEditorContainer = styled(Box, {
 `
 );
 
-const StyledBoxContainer = styled(Box)(({
-  isAllApplicationLogsMode,
-}: {
-  isAllApplicationLogsMode?: boolean;
-}) => {
-  const backgroundColor = isAllApplicationLogsMode ? colors.backgroundAlt : colors.background;
-
-  return `
-      position: absolute;
-      height: 100%;
-      width: 100%;
-      background: ${backgroundColor};
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    `;
-});
+const StyledBoxContainer = styled(Box)`
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background: ${colors.background};
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 const StyledBoxContent = styled(Box)`
   display: flex;
@@ -90,7 +74,6 @@ const StyledBoxContent = styled(Box)`
 `;
 
 export const logsViewerStyled = {
-  pausePlayButtonStyle,
   StyledEditorContainer,
   StyledBoxContainer,
   StyledBoxContent,

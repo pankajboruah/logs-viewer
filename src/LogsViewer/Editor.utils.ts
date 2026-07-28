@@ -1,3 +1,4 @@
+import { MutableRefObject } from 'react';
 import * as monaco from 'monaco-editor';
 import { LogEntry } from './LogsViewer.types';
 import { regexEscapeChars } from '../utils/regex';
@@ -108,7 +109,109 @@ const scrollToBottomMostLog = ({
   }
 };
 
+// Builds a STATIC/SURROUNDING_LOGS scroll handler that triggers infinite-scroll
+// pagination callbacks when the user reaches the top or bottom of the editor.
+function createPaginationScrollHandler({
+  handleOnScrollBottom,
+  handleOnScrollTop,
+  listenScrollToTopActionsRef,
+  listenScrollToBottomActionsRef,
+}: {
+  handleOnScrollBottom?: () => void;
+  handleOnScrollTop?: (scrollToLineNumberCB: (lineNumberToScrollTo: number) => void) => void;
+  listenScrollToTopActionsRef: MutableRefObject<boolean>;
+  listenScrollToBottomActionsRef: MutableRefObject<boolean>;
+}) {
+  let prevScrollTop = 0;
+
+  return (editorInstance: monaco.editor.IStandaloneCodeEditor, e: monaco.IScrollEvent) => {
+    if (editorInstance.getValue().length === 0) {
+      return;
+    }
+
+    const scrollHeight = editorInstance.getScrollHeight();
+    const scrollTop = editorInstance.getScrollTop();
+    const editorHeight = editorInstance.getDomNode()?.clientHeight || 0;
+    const didScrollDown = e.scrollTop > prevScrollTop;
+    prevScrollTop = e.scrollTop;
+
+    // Check if user has scrolled down by comparing with previous scroll position
+    if (didScrollDown) {
+      listenScrollToBottomActionsRef.current = true;
+      listenScrollToTopActionsRef.current = true;
+    }
+
+    // hit bottom
+    if (scrollTop + editorHeight >= scrollHeight) {
+      if (listenScrollToBottomActionsRef.current) {
+        listenScrollToBottomActionsRef.current = false;
+        handleOnScrollBottom?.();
+      }
+    }
+    // hit top
+    else if (scrollTop === 0) {
+      if (listenScrollToTopActionsRef.current) {
+        listenScrollToTopActionsRef.current = false;
+        handleOnScrollTop?.((lineNumberToScrollTo) => {
+          // this callback simulates adding of logs on top of current position
+          const position = editorInstance.getTopForPosition(lineNumberToScrollTo + 1.5, 0);
+          editorInstance.setScrollPosition(
+            { scrollTop: position },
+            monaco.editor.ScrollType.Immediate
+          );
+        });
+      }
+    }
+  };
+}
+
+// Builds a LIVE-mode scroll handler that pauses the tail once the user scrolls away
+// from the live edge (bottom when invertLogsOrder, top otherwise).
+function createLiveTailPauseHandler({
+  invertLogsOrder,
+  onUserScroll,
+}: {
+  invertLogsOrder: boolean;
+  onUserScroll: () => void;
+}) {
+  let prevScrollTop = 0;
+
+  return (e: monaco.IScrollEvent) => {
+    const didScrollUp = e.scrollTop < prevScrollTop;
+    const didScrollDown = e.scrollTop > prevScrollTop;
+    const scrolledAwayFromLiveEdge = invertLogsOrder ? didScrollUp : didScrollDown;
+
+    if (scrolledAwayFromLiveEdge && !e.scrollHeightChanged) {
+      onUserScroll();
+    }
+    prevScrollTop = e.scrollTop;
+  };
+}
+
+// Keeps the editor's word-wrap column in sync with the container width as it resizes.
+function attachWordWrapResizeObserver(
+  editorInstance: monaco.editor.IStandaloneCodeEditor,
+  containerEl: HTMLElement,
+  resizeObserverRef: MutableRefObject<ResizeObserver | null>
+) {
+  resizeObserverRef.current?.disconnect();
+  const observerCallback: ResizeObserverCallback = (entries: ResizeObserverEntry[]) => {
+    window.requestAnimationFrame((): void | undefined => {
+      if (!Array.isArray(entries) || !entries.length) {
+        return;
+      }
+      updateWordWrapColumn(editorInstance);
+    });
+  };
+  const resizeObserver = new ResizeObserver(observerCallback);
+  resizeObserver.observe(containerEl);
+  resizeObserverRef.current = resizeObserver;
+}
+
 export const editorUtils = {
+  attachWordWrapResizeObserver,
+  createLiveTailPauseHandler,
+  createPaginationScrollHandler,
   getFocusedLineDecorators,
   getHighlightDateTextDecorations,
   getHighlightKeywordsDecorations,
