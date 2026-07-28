@@ -2,9 +2,11 @@ import { useEffect, useMemo, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import Editor from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
-import { Grid, Box, Typography, Tooltip, Stack } from '@mui/material';
+import { Grid, Box, IconButton, Typography, Tooltip, Stack } from '@mui/material';
 import ExpandIcon from '../assets/Expand.svg?react';
 import InformationIcon from '../assets/ColorInformation.svg?react';
+import PauseCircleIcon from '../assets/PauseCircle.svg?react';
+import PlayCircleIcon from '../assets/PlayCircle.svg?react';
 import LogsViewerStatusView from './LogsViewerStatusView';
 import calculateTimeElapsed from '../utils/calculateTimeElapsed';
 import { colors } from '../theme/colors';
@@ -291,6 +293,7 @@ function LogsViewer({
       });
 
       if (editorContainerRef.current !== null) {
+        resizeObserverRef.current?.disconnect();
         const observerCallback: ResizeObserverCallback = (entries: ResizeObserverEntry[]) => {
           window.requestAnimationFrame((): void | undefined => {
             if (!Array.isArray(entries) || !entries.length) {
@@ -644,6 +647,7 @@ function LogsViewer({
                 </Stack>
               )}
               <Editor
+                key={mode}
                 theme='vs-dark'
                 defaultLanguage='plaintext'
                 height='100%'
@@ -658,6 +662,32 @@ function LogsViewer({
                 }}
               />
             </StyledEditorContainer>
+            {mode === 'LIVE' && setIsPaused && (
+              <Tooltip title={isPaused ? 'Resume live tail' : 'Pause live tail'}>
+                <IconButton
+                  onClick={() => setIsPaused((prev) => !prev)}
+                  sx={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '50px',
+                    zIndex: 10,
+                    height: '28px',
+                    width: '28px',
+                    padding: '4px',
+                    background: colors.overlayButtonBackground,
+                    '&:hover': {
+                      background: colors.overlayButtonBackgroundHover,
+                    },
+                  }}
+                >
+                  {isPaused ? (
+                    <PlayCircleIcon fill={colors.overlayButtonIcon} />
+                  ) : (
+                    <PauseCircleIcon fill={colors.overlayButtonIcon} />
+                  )}
+                </IconButton>
+              </Tooltip>
+            )}
             <LogsViewerStatusView
               loading={isPaused ? false : showLoader}
               hasNoLogs={!logs.length}

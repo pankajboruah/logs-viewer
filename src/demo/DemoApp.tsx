@@ -113,12 +113,6 @@ export default function DemoApp() {
             </Button>
           </>
         )}
-
-        {mode === 'LIVE' && (
-          <Button variant='outlined' onClick={() => setIsPaused((prev) => !prev)}>
-            {isPaused ? 'Resume tail' : 'Pause tail'}
-          </Button>
-        )}
       </Stack>
 
       <Box flex={1} minHeight={0}>
